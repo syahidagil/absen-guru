@@ -39,7 +39,11 @@ export default function Page() {
 
   useEffect(() => {
     fetch("/api/init", { cache: "no-store" })
-      .then((r) => r.json())
+        .then(async (r) => {
+        const t = await r.text();
+        if (!t) throw new Error("Server tidak memberi balasan (kode " + r.status + ").");
+        return JSON.parse(t);
+      })
       .then((d: Init & { ok?: boolean; pesan?: string }) => {
         if (d.ok === false) throw new Error(d.pesan);
         setInit(d);
